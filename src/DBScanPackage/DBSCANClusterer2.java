@@ -7,12 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.math3.exception.NotPositiveException;
 import org.apache.commons.math3.exception.NullArgumentException;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;
+import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.util.MathUtils;
@@ -118,25 +118,25 @@ public class DBSCANClusterer2<T extends Clusterable> extends Clusterer<T> {
     * @throws NullArgumentException if the data points are null
     */
    @Override
-   public List<Cluster<T>> cluster(final Collection<T> points) throws NullArgumentException {
+   public List<Cluster<T>> cluster(final Collection<T> crimeEntryList) throws NullArgumentException {
 
        // sanity checks
-       MathUtils.checkNotNull(points);
+       MathUtils.checkNotNull(crimeEntryList);
 
        final List<Cluster<T>> clusters = new ArrayList<Cluster<T>>();
        final Map<Clusterable, PointStatus> visited = new HashMap<Clusterable, PointStatus>();
 
-       for (final T point : points) {
-           if (visited.get(point) != null) {
+       for (final T crimeEntry : crimeEntryList) {
+           if (visited.get(((CrimeEntry)crimeEntry).point) != null) {
                continue;
            }
-           final List<T> neighbors = getNeighbors(point, points);
+           final List<T> neighbors = getNeighbors(((CrimeEntry)crimeEntry).point, crimeEntryList);
            if (neighbors.size() >= minPts) {
                // DBSCAN does not care about center points
                final Cluster<T> cluster = new Cluster<T>();
-               clusters.add(expandCluster(cluster, point, neighbors, points, visited));
+               clusters.add(expandCluster(cluster, crimeEntry, neighbors, crimeEntryList, visited));
            } else {
-               visited.put(point, PointStatus.NOISE);
+               visited.put(((CrimeEntry)crimeEntry).point, PointStatus.NOISE);
            }
        }
 
@@ -154,28 +154,28 @@ public class DBSCANClusterer2<T extends Clusterable> extends Clusterer<T> {
     * @return the expanded cluster
     */
    private Cluster<T> expandCluster(final Cluster<T> cluster,
-                                    final T point,
+                                    final T crimeEntry,
                                     final List<T> neighbors,
-                                    final Collection<T> points,
+                                    final Collection<T> crimeEntryList,
                                     final Map<Clusterable, PointStatus> visited) {
-       cluster.addPoint(point);
-       visited.put(point, PointStatus.PART_OF_CLUSTER);
+       cluster.addPoint(crimeEntry);
+       visited.put(((CrimeEntry)crimeEntry).point, PointStatus.PART_OF_CLUSTER);
 
        List<T> seeds = new ArrayList<T>(neighbors);
        int index = 0;
        while (index < seeds.size()) {
            final T current = seeds.get(index);
-           PointStatus pStatus = visited.get(current);
+           PointStatus pStatus = visited.get(((CrimeEntry)current).point);
            // only check non-visited points
            if (pStatus == null) {
-               final List<T> currentNeighbors = getNeighbors(current, points);
+               final List<T> currentNeighbors = getNeighbors(((CrimeEntry)current).point, crimeEntryList);
                if (currentNeighbors.size() >= minPts) {
                    seeds = merge(seeds, currentNeighbors);
                }
            }
 
            if (pStatus != PointStatus.PART_OF_CLUSTER) {
-               visited.put(current, PointStatus.PART_OF_CLUSTER);
+               visited.put(((CrimeEntry)current).point, PointStatus.PART_OF_CLUSTER);
                cluster.addPoint(current);
            }
 
@@ -191,11 +191,11 @@ public class DBSCANClusterer2<T extends Clusterable> extends Clusterer<T> {
     * @param points possible neighbors
     * @return the List of neighbors
     */
-   private List<T> getNeighbors(final T point, final Collection<T> points) {
+   private List<T> getNeighbors(final DoublePoint point, final Collection<T> crimeEntryList) {
        final List<T> neighbors = new ArrayList<T>();
-       for (final T neighbor : points) {
-           if (point != neighbor && distance(neighbor, point) <= eps) {
-               neighbors.add(neighbor);
+       for (final T crimeEntry : crimeEntryList) {
+           if (point != ((CrimeEntry)crimeEntry).point && distance(((CrimeEntry)crimeEntry).point, point) <= eps) {
+               neighbors.add(crimeEntry);
            }
        }
        return neighbors;

@@ -67,13 +67,13 @@ public class DBScanMainClass {
 			}
 
 			// DBScan Implementation
-			DBSCANClusterer2<Clusterable> dbScanCLusterable = new DBSCANClusterer2<>(2,1, new HonaluluMeasure());
-			java.util.List<Cluster<Clusterable>> adf = dbScanCLusterable.cluster(arrPoint);
+			DBSCANClusterer2<Clusterable> dbScanCLusterable = new DBSCANClusterer2<>(0.5,1, new HonaluluMeasure());
+			java.util.List<Cluster<Clusterable>> adf = dbScanCLusterable.cluster(crimeEntryList);
 			System.out.println("Size " + adf.size());
 
 			// Temp output to check the details of clusters
 			BufferedWriter output = null;
-			File file = new File("F:\\University Of Waterloo\\CS846_SoftwareEngineeringForBigData\\Final_Project\\CentroidList.txt");
+			File file = new File("F:\\University Of Waterloo\\CS846_SoftwareEngineeringForBigData\\Final_Project\\CentroidList_100.txt");
 			FileOutputStream is = new FileOutputStream(file);
 			OutputStreamWriter osw = new OutputStreamWriter(is);
 			Writer writer = new BufferedWriter(osw);
@@ -88,12 +88,12 @@ public class DBScanMainClass {
 			{
 				Cluster currCluster = adf.get(i);
 				List pointList = currCluster.getPoints(); 
-				writer.write("Cluster  :" + (i + 1) + "\n");
+				writer.write("Cluster  :" + (i + 1) + " \n");
 				for(int j =0; j <pointList.size();j++)
 				{
-					DoublePoint currPoint = (DoublePoint)pointList.get(j);
-					double[] pointCoordinates  = currPoint.getPoint();
-					writer.write("Point  :" + (j + 1) + " " + pointCoordinates[0] + "," + pointCoordinates[1] + "\n");
+					CrimeEntry currPoint = (CrimeEntry)pointList.get(j);
+					double[] pointCoordinates  = currPoint.point.getPoint();
+					writer.write((j + 1) + ". " + currPoint.toString() + "\n");	
 					double latitude = pointCoordinates[0] * Math.PI / 180;
 					double longitude = pointCoordinates[1] * Math.PI / 180;
 
