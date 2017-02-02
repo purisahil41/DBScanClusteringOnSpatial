@@ -38,7 +38,7 @@ public class DBScanMainClass {
 			ArrayList<String> valuesCSV = new ArrayList<String>();
 			crunchifyBuffer = new BufferedReader(
 					new FileReader(
-							"F:\\University Of Waterloo\\CS846_SoftwareEngineeringForBigData\\Final_Project\\FInal_Data\\SomeTestCases\\Fin_Data_50000.csv"));
+							"F:\\University Of Waterloo\\CS846_SoftwareEngineeringForBigData\\Final_Project\\FInal_Data\\DBScan\\FInal_Data_150000.csv"));
 
 			// How to read file in java line by line?
 			while ((crunchifyLine = crunchifyBuffer.readLine()) != null) {
@@ -84,7 +84,7 @@ public class DBScanMainClass {
 			// Temp output to check the details of clusters
 			BufferedWriter output = null;
 			File file = new File(
-					"F:\\University Of Waterloo\\CS846_SoftwareEngineeringForBigData\\Final_Project\\FInal_Data\\SomeTestCases\\Fin_Data_50000_E2.txt");
+					"F:\\University Of Waterloo\\CS846_SoftwareEngineeringForBigData\\Final_Project\\FInal_Data\\SomeTestCases\\Fin_Data_150000_E2.txt");
 			FileOutputStream is = new FileOutputStream(file);
 			OutputStreamWriter osw = new OutputStreamWriter(is);
 			Writer writer = new BufferedWriter(osw);
